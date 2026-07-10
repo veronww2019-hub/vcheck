@@ -1,61 +1,83 @@
-# VCheck API — Phase 1
+# VCheck Phase 2
 
-A modular FastAPI backend that analyses suspicious messages using explainable rules.
+VCheck is an explainable suspicious-message risk assistant. Phase 2 combines:
 
-## What Phase 1 does
+1. deterministic text and URL warning rules;
+2. a reproducible word-and-character TF-IDF classifier;
+3. explicit dataset provenance and version manifests;
+4. honest fallback to rules when no trained model exists.
 
-- Accepts a pasted message
-- Normalises the text safely
-- Extracts URLs
-- Detects explainable scam-warning signals
-- Returns a 0–100 risk score and Low/Medium/High level
-- Returns clear recommended actions
-- Provides API documentation and automated tests
+The model is supporting evidence only. It adds at most 30 risk points and cannot
+reduce deterministic warnings.
 
-## What Phase 1 does not do yet
+## Install
 
-- It does not verify bank accounts, phone numbers, or domains against live services
-- It does not use DataHub yet
-- It does not use machine learning yet
-- It does not make a legal or definitive determination that a message is a scam
-
-## Setup using the existing hackathon virtual environment
-
-Extract this project as:
-
-```text
-C:\Users\veron\datahub-hackathon\vcheck
-```
-
-Then open PowerShell:
-
-```powershell
-cd C:\Users\veron\datahub-hackathon
-.\.venv\Scripts\Activate.ps1
-cd vcheck
-python -m pip install --upgrade pip
+```bash
 pip install -e ".[dev]"
 ```
 
-Run the API:
+## Build the training data
 
-```powershell
+Generate 1,200 deterministic synthetic messages:
+
+```bash
+python scripts/generate_synthetic_dataset.py
+```
+
+Optional: fetch the UCI SMS Spam Collection at runtime:
+
+```bash
+python scripts/fetch_uci_sms.py
+```
+
+Merge, validate, deduplicate, and create a version manifest:
+
+```bash
+python scripts/build_training_dataset.py
+```
+
+## Train and evaluate
+
+```bash
+python scripts/train_model.py
+```
+
+This creates:
+
+- `artifacts/suspicious_message_classifier.joblib`
+- `artifacts/model_metadata.json`
+- `artifacts/evaluation_report.json`
+
+## Run
+
+```bash
 uvicorn vcheck.main:app --reload
 ```
 
-Open:
+Open `http://127.0.0.1:8000/docs`.
 
-- Swagger UI: http://127.0.0.1:8000/docs
-- Health endpoint: http://127.0.0.1:8000/health
+Useful endpoints:
 
-Run tests:
+- `GET /health`
+- `GET /api/v1/model`
+- `POST /api/v1/model/reload`
+- `GET /api/v1/rules`
+- `POST /api/v1/analyse`
 
-```powershell
+## Tests and quality
+
+```bash
+ruff check .
 pytest --cov=vcheck --cov-report=term-missing
 ```
 
-Check code quality:
+## Data statement
 
-```powershell
-ruff check .
-```
+The generated Malaysian-style records contain no real victim information and use
+reserved `.example` domains. UCI dataset 228 may optionally be fetched and is not
+redistributed in this repository. Its labels are spam/ham, not confirmed fraud.
+Review source terms and provide the required citation in the final repository.
+
+## Licence
+
+Project source code and VCheck synthetic templates are licensed under Apache 2.0.

@@ -21,6 +21,7 @@ def test_health_endpoint(client: TestClient) -> None:
 
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+    assert "model_available" in response.json()
     assert response.headers["X-Request-ID"]
 
 
@@ -41,6 +42,8 @@ def test_analyse_endpoint(client: TestClient) -> None:
     assert payload["risk_score"] >= 20
     assert payload["warning_signs"]
     assert payload["request_id"] == response.headers["X-Request-ID"]
+    assert "machine_learning" in payload
+    assert payload["risk_score"] >= payload["rule_score"]
 
 
 def test_supplied_request_id_is_preserved(client: TestClient) -> None:
@@ -66,3 +69,16 @@ def test_rules_are_visible_for_auditability(client: TestClient) -> None:
     rules = response.json()
     assert len(rules) >= 5
     assert all("explanation" in rule for rule in rules)
+
+
+def test_model_status_endpoint(client: TestClient) -> None:
+    response = client.get("/api/v1/model")
+    assert response.status_code == 200
+    assert "available" in response.json()
+    assert "model_path" in response.json()
+
+
+def test_model_reload_endpoint(client: TestClient) -> None:
+    response = client.post("/api/v1/model/reload")
+    assert response.status_code == 200
+    assert "message" in response.json()

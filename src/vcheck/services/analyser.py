@@ -14,11 +14,14 @@ from vcheck.domain.models import (
     AnalyseMessageResponse,
     AnalysisMetadata,
     ExtractedUrl,
+    MachineLearningAssessment,
     MatchedSignal,
+    MlPredictedLabel,
     RiskLevel,
     SignalCategory,
 )
 from vcheck.domain.rules import TEXT_RULES, TextRule
+from vcheck.services.ml_classifier import MlClassifier
 
 URL_PATTERN = re.compile(
     r"(?P<url>(?:https?://|www\.)[^\s<>\[\]{}\"']+)",
@@ -57,10 +60,15 @@ class AnalysisResult:
 class MessageAnalyser:
     """Run deterministic, auditable Phase 1 analysis."""
 
-    analysis_version = "rules-0.1.0"
+    analysis_version = "hybrid-0.2.0"
 
-    def __init__(self, rules: tuple[TextRule, ...] = TEXT_RULES) -> None:
+    def __init__(
+        self,
+        rules: tuple[TextRule, ...] = TEXT_RULES,
+        ml_classifier: MlClassifier | None = None,
+    ) -> None:
         self._rules = rules
+        self._ml_classifier = ml_classifier
 
     @property
     def rules(self) -> tuple[TextRule, ...]:
@@ -75,8 +83,13 @@ class MessageAnalyser:
         signals.extend(self._signals_from_urls(urls))
         signals = self._deduplicate_signals(signals)
 
-        raw_score = sum(signal.severity_points for signal in signals)
-        risk_score = min(raw_score, 100)
+        rule_score = min(sum(signal.severity_points for signal in signals), 100)
+        machine_learning = (
+            self._ml_classifier.assess(normalised_text)
+            if self._ml_classifier is not None
+            else self._unavailable_ml_assessment()
+        )
+        risk_score = min(rule_score + machine_learning.score_contribution, 100)
         risk_level = self._risk_level(risk_score)
 
         processing_time_ms = round((time.perf_counter() - started) * 1000, 3)
@@ -86,9 +99,13 @@ class MessageAnalyser:
             request_id=request_id,
             risk_level=risk_level,
             risk_score=risk_score,
-            summary=self._build_summary(risk_level, signals, urls),
+            rule_score=rule_score,
+            summary=self._build_summary(
+                risk_level, signals, urls, machine_learning.score_contribution
+            ),
             warning_signs=signals,
             extracted_urls=urls,
+            machine_learning=machine_learning,
             recommended_actions=self._recommended_actions(risk_level, bool(urls)),
             metadata=AnalysisMetadata(
                 analysis_version=self.analysis_version,
@@ -97,10 +114,19 @@ class MessageAnalyser:
                 input_fingerprint=fingerprint,
             ),
             disclaimer=(
-                "VCheck Phase 1 provides an automated risk indication, not proof that a "
+                "VCheck provides an automated risk indication, not proof that a "
                 "message is legitimate or fraudulent. Verify important requests through "
                 "official channels."
             ),
+        )
+
+    @staticmethod
+    def _unavailable_ml_assessment() -> MachineLearningAssessment:
+        return MachineLearningAssessment(
+            available=False,
+            predicted_label=MlPredictedLabel.UNAVAILABLE,
+            score_contribution=0,
+            explanation="No ML classifier was configured; explainable rules were used only.",
         )
 
     @staticmethod
@@ -267,18 +293,30 @@ class MessageAnalyser:
         risk_level: RiskLevel,
         signals: list[MatchedSignal],
         urls: list[ExtractedUrl],
+        ml_contribution: int,
     ) -> str:
+        if not signals and ml_contribution == 0:
+            return (
+                "No warning signs in the current rule set or ML scoring bands were detected. "
+                "This does not prove the message is safe."
+            )
+
         if not signals:
             return (
-                "No warning signs in the current Phase 1 rule set were detected. "
-                "This does not prove the message is safe."
+                f"{risk_level.value} risk based on supporting ML evidence. "
+                "No deterministic warning rule matched, so independent verification is important."
             )
 
         strongest = ", ".join(signal.title.lower() for signal in signals[:3])
         link_note = f" {len(urls)} link(s) were extracted for inspection." if urls else ""
+        ml_note = (
+            f" The ML model added {ml_contribution} supporting point(s)."
+            if ml_contribution
+            else ""
+        )
         return (
             f"{risk_level.value} risk: detected {len(signals)} warning sign(s), "
-            f"including {strongest}.{link_note}"
+            f"including {strongest}.{link_note}{ml_note}"
         )
 
     @staticmethod

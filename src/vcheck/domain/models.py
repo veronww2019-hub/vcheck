@@ -24,6 +24,12 @@ class SignalCategory(str, Enum):
     LINK = "link"
 
 
+class MlPredictedLabel(str, Enum):
+    SUSPICIOUS = "suspicious"
+    LEGITIMATE = "legitimate"
+    UNAVAILABLE = "unavailable"
+
+
 class AnalyseMessageRequest(BaseModel):
     model_config = ConfigDict(
         str_strip_whitespace=True,
@@ -73,6 +79,18 @@ class ExtractedUrl(BaseModel):
     has_suspicious_tld: bool
 
 
+class MachineLearningAssessment(BaseModel):
+    available: bool
+    predicted_label: MlPredictedLabel
+    suspicious_probability: float | None = Field(default=None, ge=0, le=1)
+    confidence: float | None = Field(default=None, ge=0, le=1)
+    score_contribution: int = Field(ge=0, le=30)
+    model_version: str | None = None
+    trained_at: str | None = None
+    dataset_version: str | None = None
+    explanation: str
+
+
 class AnalysisMetadata(BaseModel):
     analysis_version: str
     rules_evaluated: int = Field(ge=0)
@@ -84,9 +102,11 @@ class AnalyseMessageResponse(BaseModel):
     request_id: str
     risk_level: RiskLevel
     risk_score: int = Field(ge=0, le=100)
+    rule_score: int = Field(ge=0, le=100)
     summary: str
     warning_signs: list[MatchedSignal]
     extracted_urls: list[ExtractedUrl]
+    machine_learning: MachineLearningAssessment
     recommended_actions: list[str]
     metadata: AnalysisMetadata
     disclaimer: str
@@ -97,6 +117,7 @@ class HealthResponse(BaseModel):
     service: str
     version: str
     environment: str
+    model_available: bool
 
 
 class RuleSummary(BaseModel):
@@ -105,3 +126,13 @@ class RuleSummary(BaseModel):
     category: SignalCategory
     severity_points: int
     explanation: str
+
+
+class ModelStatusResponse(BaseModel):
+    available: bool
+    model_path: str
+    model_version: str | None = None
+    trained_at: str | None = None
+    dataset_version: str | None = None
+    training_rows: int | None = Field(default=None, ge=0)
+    message: str

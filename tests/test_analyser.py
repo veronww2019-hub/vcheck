@@ -16,6 +16,8 @@ def test_high_risk_message_returns_explainable_signals() -> None:
     assert result.risk_level is RiskLevel.HIGH
     assert result.risk_score == 100
     assert result.request_id == "test-request"
+    assert result.rule_score == 100
+    assert not result.machine_learning.available
 
     codes = {signal.code for signal in result.warning_signs}
     assert "urgent_pressure" in codes
@@ -34,6 +36,7 @@ def test_ordinary_message_is_low_risk() -> None:
     assert result.risk_level is RiskLevel.LOW
     assert result.risk_score == 0
     assert result.warning_signs == []
+    assert result.rule_score == 0
     assert result.extracted_urls == []
 
 

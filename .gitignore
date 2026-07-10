@@ -1,31 +1,28 @@
-# Python
+.venv/
 __pycache__/
 *.py[cod]
-*.egg-info/
 .pytest_cache/
-.ruff_cache/
 .coverage
 htmlcov/
-
-# Virtual environments
-.venv/
-venv/
-
-# Environment and secrets
-.env
-.env.*
-!.env.example
-
-# Editors / OS
-.vscode/
-.idea/
+.ruff_cache/
+*.egg-info/
 .DS_Store
+<<<<<<< HEAD
 Thumbs.db
 
 # Generated datasets
-data/raw/*
-!data/raw/.gitkeep
+data/raw/
 data/processed/*.csv
 
 # Generated model binaries
 artifacts/*.joblib
+=======
+
+# Generated datasets and trained model artifacts.
+# The empty folders stay in Git through .gitkeep files.
+data/raw/*.csv
+data/processed/*.csv
+data/processed/*.json
+artifacts/*.joblib
+artifacts/*.json
+>>>>>>> 45209b8 (Add Phase 2 ML training and message classification)

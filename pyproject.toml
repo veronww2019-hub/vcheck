@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vcheck-api"
-version = "0.1.0"
-description = "Phase 1 backend for VCheck, an explainable suspicious-message risk assistant."
+version = "0.2.0"
+description = "Hybrid rules and machine-learning backend for VCheck."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
@@ -14,8 +14,12 @@ authors = [
 ]
 dependencies = [
   "fastapi>=0.115,<1.0",
-  "uvicorn[standard]>=0.30,<1.0",
-  "pydantic>=2.10,<3.0"
+  "joblib>=1.4,<2.0",
+  "numpy>=2.0,<3.0",
+  "pandas>=2.2,<4.0",
+  "pydantic>=2.10,<3.0",
+  "scikit-learn>=1.6,<2.0",
+  "uvicorn[standard]>=0.30,<1.0"
 ]
 
 [project.optional-dependencies]

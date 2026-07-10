@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from vcheck.api.routes import router
 from vcheck.core.config import settings
 from vcheck.core.logging import configure_logging
+from vcheck.services.ml_classifier import MlClassifier
 
 configure_logging()
 logger = logging.getLogger(__name__)
@@ -22,6 +23,10 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.settings = settings
+    app.state.ml_classifier = MlClassifier(
+        model_path=settings.model_path,
+        metadata_path=settings.model_metadata_path,
+    )
     logger.info(
         "Starting %s version=%s environment=%s",
         settings.app_name,
@@ -36,7 +41,7 @@ app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
     description=(
-        "Phase 1 explainable suspicious-message risk analysis. "
+        "Hybrid rules and machine-learning suspicious-message risk analysis. "
         "This prototype does not make definitive fraud determinations."
     ),
     lifespan=lifespan,
