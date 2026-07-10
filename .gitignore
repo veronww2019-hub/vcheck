@@ -19,3 +19,10 @@ venv/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Generated datasets
+data/raw/
+data/processed/*.csv
+
+# Generated model binaries
+artifacts/*.joblib
