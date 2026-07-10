@@ -1,0 +1,14 @@
+{
+  "low_risk": [
+    "Hi, our group meeting is in the engineering lab at 3 PM tomorrow.",
+    "Your library book is due next Friday."
+  ],
+  "medium_risk": [
+    "Please pay the RM5 delivery fee at http://parcel-payment.example.",
+    "You won a free gift. Claim your reward at https://example.xyz now."
+  ],
+  "high_risk": [
+    "URGENT: Your bank account will be suspended. Send your OTP and transfer RM50 now.",
+    "Police notice: install AnyDesk immediately and do not tell anyone."
+  ]
+}
