@@ -13,6 +13,8 @@ venv/
 
 # Environment and secrets
 .env
+.env.*
+!.env.example
 
 # Editors / OS
 .vscode/
@@ -21,7 +23,8 @@ venv/
 Thumbs.db
 
 # Generated datasets
-data/raw/
+data/raw/*
+!data/raw/.gitkeep
 data/processed/*.csv
 
 # Generated model binaries
