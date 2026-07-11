@@ -16,6 +16,7 @@ def main() -> None:
         nargs="+",
         default=[
             Path("data/raw/synthetic_messages.csv"),
+            Path("data/raw/manual_messages.csv"),
             Path("data/raw/uci_sms_spam_collection.csv"),
         ],
     )
