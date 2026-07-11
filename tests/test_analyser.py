@@ -71,3 +71,68 @@ def test_url_security_flags() -> None:
     )
     codes = {signal.code for signal in result.warning_signs}
     assert {"shortened_link", "non_https_link", "watchlist_tld", "punycode_link"} <= codes
+
+def test_malay_account_freeze_message_is_high_risk() -> None:
+    result = analyser.analyse(
+        text=(
+            "Tindakan segera: akaun anda akan dibekukan. "
+            "Sahkan OTP sekarang juga."
+        ),
+        request_id="malay-account-freeze",
+    )
+
+    assert result.risk_level is RiskLevel.HIGH
+
+    codes = {signal.code for signal in result.warning_signs}
+    assert {
+        "urgent_pressure",
+        "threatened_consequence",
+        "credential_request",
+    } <= codes
+
+
+def test_malay_parcel_release_fee_message_is_medium_or_high_risk() -> None:
+    result = analyser.analyse(
+        text=(
+            "Pakej anda ditahan. Buat pemindahan RM5 "
+            "sebagai yuran pelepasan."
+        ),
+        request_id="malay-parcel-release-fee",
+    )
+
+    assert result.risk_level in {RiskLevel.MEDIUM, RiskLevel.HIGH}
+
+    codes = {signal.code for signal in result.warning_signs}
+    assert {
+        "threatened_consequence",
+        "payment_request",
+    } <= codes
+
+
+def test_normal_malay_project_meeting_is_low_risk() -> None:
+    result = analyser.analyse(
+        text=(
+            "Mesyuarat projek dipindahkan ke Bilik Seminar B2 "
+            "pada pukul 2 petang esok."
+        ),
+        request_id="malay-project-meeting",
+    )
+
+    assert result.risk_level is RiskLevel.LOW
+    assert result.rule_score == 0
+    assert result.warning_signs == []
+
+
+def test_legitimate_university_fee_reminder_is_low_risk() -> None:
+    result = analyser.analyse(
+        text=(
+            "Peringatan rasmi universiti: tarikh akhir urusan yuran "
+            "pengajian bagi semester ini ialah 25 Julai. "
+            "Sila semak portal pelajar universiti untuk maklumat lanjut."
+        ),
+        request_id="university-fee-reminder",
+    )
+
+    assert result.risk_level is RiskLevel.LOW
+    assert result.rule_score == 0
+    assert result.warning_signs == []
