@@ -27,7 +27,8 @@ TEXT_RULES: tuple[TextRule, ...] = (
         explanation="The message pressures the recipient to act quickly before verifying it.",
         pattern=re.compile(
             r"\b(urgent|immediately|act now|right now|final warning|last chance|"
-            r"within\s+\d+\s*(minutes?|hours?)|before it is too late)\b",
+            r"within\s+\d+\s*(minutes?|hours?)|before it is too late|"
+            r"bertindak segera|tindakan segera|sahkan segera|sekarang juga)\b",
             re.IGNORECASE,
         ),
     ),
@@ -40,7 +41,10 @@ TEXT_RULES: tuple[TextRule, ...] = (
         pattern=re.compile(
             r"\b(account (?:will be )?(?:blocked|closed|suspended|frozen)|"
             r"service (?:will be )?(?:terminated|disconnected)|legal action|"
-            r"delivery (?:will be )?(?:cancelled|canceled)|police action)\b",
+            r"delivery (?:will be )?(?:cancelled|canceled)|police action|"
+            r"akaun(?: anda)? (?:akan )?(?:dibekukan|disekat)|"
+            r"pakej(?: anda)? (?:akan )?ditahan|"
+            r"tindakan undang-undang|waran tangkap)\b",
             re.IGNORECASE,
         ),
     ),
@@ -52,7 +56,9 @@ TEXT_RULES: tuple[TextRule, ...] = (
         explanation="The message requests money, a fee, a deposit, or a bank transfer.",
         pattern=re.compile(
             r"\b(pay(?:ment)?|transfer|bank in|deposit|processing fee|release fee|"
-            r"delivery fee|admin fee|send money|duitnow|rm\s?\d+(?:[.,]\d{1,2})?)\b",
+            r"delivery fee|admin fee|send money|duitnow|"
+            r"bayar sekarang|buat pemindahan|pindahkan wang|yuran pelepasan|"
+            r"rm\s?\d+(?:[.,]\d{1,2})?)\b",
             re.IGNORECASE,
         ),
     ),
