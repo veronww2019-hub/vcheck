@@ -1,7 +1,5 @@
-@'
-domain_id,organisation,official_domain,category,verification_status
+﻿domain_id,organisation,official_domain,category,verification_status
 DOM001,VCheck Demonstration Bank,bank.vcheck-demo.test,banking,verified_demo
 DOM002,VCheck Demonstration Courier,courier.vcheck-demo.test,parcel,verified_demo
 DOM003,VCheck Demonstration University,university.vcheck-demo.test,education,verified_demo
 DOM004,VCheck Demonstration Marketplace,market.vcheck-demo.test,ecommerce,verified_demo
-'@ | Set-Content -Path .\data\evidence\verified_domains.csv -Encoding utf8

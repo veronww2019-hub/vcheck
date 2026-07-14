@@ -1,5 +1,4 @@
-@'
-pattern_id,category,language,pattern_text,synthetic
+﻿pattern_id,category,language,pattern_text,synthetic
 SYN001,banking,en,Your account will be frozen unless you provide your OTP immediately,true
 SYN002,banking,ms,Akaun anda akan dibekukan jika anda tidak sahkan OTP sekarang,true
 SYN003,parcel,en,Your parcel is being held and requires a small release fee,true
@@ -8,4 +7,3 @@ SYN005,job,en,Pay a registration fee before attending the job interview,true
 SYN006,authority,ms,Waran tangkap akan dikeluarkan jika bayaran tidak dibuat segera,true
 SYN007,payment,en,Transfer the money now to avoid further action,true
 SYN008,remote_access,en,Install this application so our officer can access your device,true
-'@ | Set-Content -Path .\data\evidence\synthetic_scam_patterns.csv -Encoding utf8
