@@ -44,6 +44,11 @@ def test_analyse_endpoint(client: TestClient) -> None:
     assert payload["request_id"] == response.headers["X-Request-ID"]
     assert "machine_learning" in payload
     assert payload["risk_score"] >= payload["rule_score"]
+    assert "datahub_context_available" in payload
+    assert "selected_evidence" in payload
+    assert "excluded_evidence" in payload
+    assert "provenance_summary" in payload
+    assert "context_warning" in payload
 
 
 def test_supplied_request_id_is_preserved(client: TestClient) -> None:

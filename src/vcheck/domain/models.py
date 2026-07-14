@@ -90,6 +90,19 @@ class MachineLearningAssessment(BaseModel):
     dataset_version: str | None = None
     explanation: str
 
+class EvidenceDecision(BaseModel):
+    """One DataHub evidence source and its trust-policy decision."""
+
+    name: str
+    urn: str | None = None
+    source_classification: str
+    review_status: str
+    freshness_status: str
+    reliability: str
+    configured_evidence_role: str
+    decision: str
+    role: str
+    reason: str
 
 class AnalysisMetadata(BaseModel):
     analysis_version: str
@@ -108,6 +121,19 @@ class AnalyseMessageResponse(BaseModel):
     extracted_urls: list[ExtractedUrl]
     machine_learning: MachineLearningAssessment
     recommended_actions: list[str]
+
+    datahub_context_available: bool = False
+    selected_evidence: list[EvidenceDecision] = Field(
+        default_factory=list
+    )
+    excluded_evidence: list[EvidenceDecision] = Field(
+        default_factory=list
+    )
+    provenance_summary: str = (
+        "Evidence provenance was not checked."
+    )
+    context_warning: str | None = None
+
     metadata: AnalysisMetadata
     disclaimer: str
 

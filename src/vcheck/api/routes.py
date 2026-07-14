@@ -12,6 +12,8 @@ from vcheck.domain.models import (
     RuleSummary,
 )
 from vcheck.services.analyser import MessageAnalyser
+from vcheck.services.contextual_analyser import ContextualMessageAnalyser
+from vcheck.services.datahub_context import DataHubContextService
 from vcheck.services.ml_classifier import MlClassifier
 
 router = APIRouter()
@@ -21,8 +23,27 @@ def _ml_classifier(request: Request) -> MlClassifier:
     return request.app.state.ml_classifier
 
 
-def _analyser(request: Request) -> MessageAnalyser:
-    return MessageAnalyser(ml_classifier=_ml_classifier(request))
+def _datahub_context(
+    request: Request,
+) -> DataHubContextService:
+    """Return the shared DataHub context service."""
+
+    return request.app.state.datahub_context
+
+
+def _analyser(
+    request: Request,
+) -> ContextualMessageAnalyser:
+    """Build the rule/ML analyser with DataHub context."""
+
+    message_analyser = MessageAnalyser(
+        ml_classifier=_ml_classifier(request)
+    )
+
+    return ContextualMessageAnalyser(
+        message_analyser=message_analyser,
+        datahub_context=_datahub_context(request),
+    )
 
 
 @router.get(

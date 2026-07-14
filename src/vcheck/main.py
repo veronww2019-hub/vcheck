@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from vcheck.api.routes import router
 from vcheck.core.config import settings
 from vcheck.core.logging import configure_logging
+from vcheck.services.datahub_context import DataHubContextService
 from vcheck.services.ml_classifier import MlClassifier
 
 configure_logging()
@@ -22,19 +23,29 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Create and close shared application services."""
+
     app.state.settings = settings
+
     app.state.ml_classifier = MlClassifier(
         model_path=settings.model_path,
         metadata_path=settings.model_metadata_path,
     )
+
+    app.state.datahub_context = DataHubContextService()
+
     logger.info(
         "Starting %s version=%s environment=%s",
         settings.app_name,
         settings.app_version,
         settings.environment,
     )
-    yield
-    logger.info("Stopping %s", settings.app_name)
+
+    try:
+        yield
+    finally:
+        app.state.datahub_context.close()
+        logger.info("Stopping %s", settings.app_name)
 
 
 app = FastAPI(

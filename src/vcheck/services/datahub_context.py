@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping
+from contextlib import suppress
 from typing import Any, Protocol
 
 from datahub.ingestion.graph.client import (
@@ -12,7 +13,6 @@ from datahub.ingestion.graph.client import (
 )
 
 from vcheck.services.evidence_policy import select_evidence
-
 
 EVIDENCE_URNS: tuple[str, ...] = (
     (
@@ -203,8 +203,5 @@ class DataHubContextService:
     def close(self) -> None:
         """Close the underlying DataHub client."""
 
-        try:
+        with suppress(Exception):
             self._graph.close()
-        except Exception:
-            # Closing must not crash application shutdown.
-            pass
