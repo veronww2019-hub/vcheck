@@ -1,0 +1,9 @@
+guidance_id,category,warning_sign,recommended_action,source_name
+OFF001,banking,Requests an OTP or password,Never share OTP codes passwords or banking credentials,VCheck Reviewed Guidance
+OFF002,banking,Threatens immediate account suspension,Contact the bank through its official application or published phone number,VCheck Reviewed Guidance
+OFF003,parcel,Requests an unexpected parcel release fee,Verify the parcel through the courier official application or website,VCheck Reviewed Guidance
+OFF004,authority,Threatens immediate arrest or legal action,Contact the relevant authority using independently verified contact information,VCheck Reviewed Guidance
+OFF005,payment,Requests an urgent money transfer,Pause and verify the recipient through a separate trusted channel,VCheck Reviewed Guidance
+OFF006,remote_access,Requests installation of a remote access application,Do not install remote access software for an unknown sender,VCheck Reviewed Guidance
+OFF007,job,Requests payment before an interview or job offer,Verify the employer independently and do not pay an advance fee,VCheck Reviewed Guidance
+OFF008,link,Uses a suspicious or mismatched web address,Do not open the link and locate the organisation website independently,VCheck Reviewed Guidance
