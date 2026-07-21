@@ -123,6 +123,7 @@ class AnalyseMessageResponse(BaseModel):
     recommended_actions: list[str]
 
     datahub_context_available: bool = False
+    datahub_integration_mode: str = "unavailable"
     selected_evidence: list[EvidenceDecision] = Field(
         default_factory=list
     )

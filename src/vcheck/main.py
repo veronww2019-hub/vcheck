@@ -14,7 +14,9 @@ from fastapi.responses import JSONResponse
 from vcheck.api.routes import router
 from vcheck.core.config import settings
 from vcheck.core.logging import configure_logging
-from vcheck.services.datahub_context import DataHubContextService
+from vcheck.services.agent_context_service import (
+    AgentContextKitService,
+)
 from vcheck.services.ml_classifier import MlClassifier
 from vcheck.services.report_service import CommunityReportService
 
@@ -33,7 +35,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         metadata_path=settings.model_metadata_path,
     )
 
-    app.state.datahub_context = DataHubContextService()
+    app.state.datahub_context = AgentContextKitService()
     app.state.community_report_service = CommunityReportService()
 
     logger.info(

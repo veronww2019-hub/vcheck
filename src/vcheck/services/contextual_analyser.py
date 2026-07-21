@@ -59,6 +59,10 @@ class ContextualMessageAnalyser:
                 "datahub_context_available": bool(
                     context.get("available", False)
                 ),
+                "datahub_integration_mode": context.get(
+                    "integration_mode",
+                    "unavailable",
+                ),
                 "selected_evidence": context.get(
                     "selected_evidence",
                     [],
