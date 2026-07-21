@@ -162,3 +162,35 @@ class ModelStatusResponse(BaseModel):
     dataset_version: str | None = None
     training_rows: int | None = Field(default=None, ge=0)
     message: str
+
+class SubmitReportRequest(BaseModel):
+    """A suspicious message submitted for sanitised reporting."""
+
+    text: str = Field(
+        min_length=1,
+        max_length=10_000,
+        description="The suspicious message to sanitise and report.",
+    )
+    category: str = Field(
+        default="unspecified",
+        min_length=1,
+        max_length=50,
+    )
+
+
+class SubmitReportResponse(BaseModel):
+    """Result of saving a sanitised community report."""
+
+    report_id: str
+    category: str
+    sanitised_text: str
+    submitted_at: str
+
+    review_status: str = "unverified"
+    allowed_for_decision: bool = False
+
+    saved_locally: bool
+    datahub_writeback_available: bool
+    writeback_warning: str | None = None
+
+    explanation: str

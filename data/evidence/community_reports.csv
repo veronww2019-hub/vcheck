@@ -2,4 +2,4 @@ report_id,category,sanitised_text,review_status,allowed_for_decision
 COM001,parcel,Your parcel is held and requires payment through [URL],unverified,false
 COM002,banking,Your account will be blocked contact [PHONE] and provide an OTP,unverified,false
 COM003,job,Pay a processing fee to secure the position,unverified,false
-COM004,authority,Immediate legal action will be taken unless payment is transferred,unverified,false
+COM004,authority,Immediate legal action will be taken unless payment is transferred,unverified,falseCOM-20260721131942-41CCF9,banking,Akaun anda akan dibekukan. Hubungi [PHONE_OR_ACCOUNT] atau buka [URL] dan emel [EMAIL].,unverified,false

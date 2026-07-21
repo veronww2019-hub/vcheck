@@ -16,6 +16,7 @@ from vcheck.core.config import settings
 from vcheck.core.logging import configure_logging
 from vcheck.services.datahub_context import DataHubContextService
 from vcheck.services.ml_classifier import MlClassifier
+from vcheck.services.report_service import CommunityReportService
 
 configure_logging()
 logger = logging.getLogger(__name__)
@@ -33,6 +34,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     )
 
     app.state.datahub_context = DataHubContextService()
+    app.state.community_report_service = CommunityReportService()
 
     logger.info(
         "Starting %s version=%s environment=%s",

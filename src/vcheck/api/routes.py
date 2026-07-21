@@ -10,11 +10,14 @@ from vcheck.domain.models import (
     HealthResponse,
     ModelStatusResponse,
     RuleSummary,
+    SubmitReportRequest,
+    SubmitReportResponse,
 )
 from vcheck.services.analyser import MessageAnalyser
 from vcheck.services.contextual_analyser import ContextualMessageAnalyser
 from vcheck.services.datahub_context import DataHubContextService
 from vcheck.services.ml_classifier import MlClassifier
+from vcheck.services.report_service import CommunityReportService
 
 router = APIRouter()
 
@@ -63,6 +66,12 @@ def health(request: Request) -> HealthResponse:
         model_available=classifier.available,
     )
 
+def _community_report_service(
+    request: Request,
+) -> CommunityReportService:
+    """Return the shared community-report service."""
+
+    return request.app.state.community_report_service
 
 @router.get(
     "/api/v1/rules",
@@ -134,3 +143,23 @@ def analyse_message(
         text=payload.text,
         request_id=request.state.request_id,
     )
+
+@router.post(
+    "/reports",
+    response_model=SubmitReportResponse,
+    status_code=201,
+)
+def submit_community_report(
+    payload: SubmitReportRequest,
+    request: Request,
+) -> SubmitReportResponse:
+    """Sanitise and record an unverified community report."""
+
+    result = _community_report_service(
+        request
+    ).submit_report(
+        text=payload.text,
+        category=payload.category,
+    )
+
+    return SubmitReportResponse.model_validate(result)
